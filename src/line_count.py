@@ -1,6 +1,7 @@
 import sys
 import os
 import time
+from fio_utils import file_check
 
 def line_count(filepath): 
     with open(filepath) as f:
@@ -12,9 +13,7 @@ def line_count(filepath):
 def main():
     filepath = sys.argv[1]
 
-    if not os.path.isfile(filepath):
-        print("File path {} does not exist. Exiting...".format(filepath))
-        sys.exit()
+    file_check(filepath)
     
     start_time = time.time_ns()
     print("Starting line count of '{}'".format(filepath))
