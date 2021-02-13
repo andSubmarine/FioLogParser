@@ -10,5 +10,8 @@ files=(${HOME_FOLDER}/*${JOBNAME}_${METRIC}.*.log)
 for f in ${files[@]}
 do 
     name="$(basename -s .log $f)"
-    python ../src/fiohistogram.py -f "$f" -m kernel -o "$name-hist.png" -v
+    python ../src/fiohistogram.py -f "$f" -m simple -o "$name-hist.png"
+    python ../src/fiohistogram.py -f "$f" -m simple -o "$name-hist-ylog.png" --ylog
+    python ../src/fiohistogram.py -f "$f" -m normal -o "$name-hist-normal.png" --ylog
+    python ../src/fiohistogram.py -f "$f" -m kernel -o "$name-hist-kernel.png" --ylog
 done
