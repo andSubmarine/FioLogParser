@@ -53,7 +53,8 @@ def color_hist(ax, N, bins, patches):
 
 def histogram(args, sample, smin, smax):
     fig, ax = plt.subplots()
-    N, bins, patches = ax.hist(sample,bins=args.bins, density=True, stacked=True, log=args.ylog, range=(smin, smax))
+    b = int(args.bins) if not args.xlog else 10 ** np.linspace(np.log10(smin), np.log10(smax), int(args.bins))
+    N, bins, patches = ax.hist(sample,bins=b, density=True, stacked=True, log=args.ylog, range=(smin, smax))
     if (args.color):
         color_hist(ax, N, bins, patches)
     ax.set(xlabel=args.xlabel, ylabel="Propability density",title="Distribution of measurement values")
@@ -84,7 +85,8 @@ def normal_distribution(args, sample, smin, smax):
     if (args.verbose): # plot the histogram and pdf
         print("Plot the histogram and pdf...")
     fig, ax = plt.subplots()
-    N, bins, patches = ax.hist(sample, bins=args.bins, density=True, stacked=True, log=args.ylog, range=(smin, smax))
+    b = int(args.bins) if not args.xlog else 10 ** np.linspace(np.log10(smin), np.log10(smax), int(args.bins))
+    N, bins, patches = ax.hist(sample, bins=args.b, density=True, stacked=True, log=args.ylog, range=(smin, smax))
     if (args.color):
         color_hist(ax, N, bins, patches)
     ax.set(xlabel=args.xlabel, ylabel="Propability density",title="Normalized Density Estimation")
@@ -130,7 +132,8 @@ def kernel_density(args, sample, smin, smax):
     if (args.verbose): # plotting histogram and pdf
         print("Plotting histogram and pdf...")
     fig, ax = plt.subplots()
-    N, bins, patches = ax.hist(sample, bins=args.bins, density=True, stacked=True, log=args.ylog, range=(smin, smax))
+    b = int(args.bins) if not args.xlog else 10 ** np.linspace(np.log10(smin), np.log10(smax), int(args.bins))
+    N, bins, patches = ax.hist(sample, bins=b, density=True, stacked=True, log=args.ylog, range=(smin, smax))
     if (args.color):
         color_hist(ax, N, bins, patches)
     if (args.percentage):
@@ -152,7 +155,7 @@ def run(args):
     
     # calculate min and max values of sample data
     sample_min = np.min(sample)
-    sample_max = np.max(sample)
+    sample_max = int(args.max) if args.max else np.max(sample)
     if (args.verbose):
         print("Min value: {}, Max value: {}".format(sample_min, sample_max))
 
@@ -180,7 +183,9 @@ def main():
                         choices=["gaussian", "tophat", "epanechnikov"], default="gaussian")
     parser.add_argument('--kbw', help="set kernel bandwidth, see: https://en.wikipedia.org/wiki/Kernel_density_estimation#Bandwidth_selection. defaults to '0.1'", default=0.1, type=float)
     parser.add_argument('--bins', help="number of bins to distribute values into. defaults to 100.", default=100)
+    parser.add_argument('--max', help="specify maximum data value for range.")
     parser.add_argument('--ylog', help="use a logarithmic y-axis. disabled by default.", default=False, action='store_true')
+    parser.add_argument('--xlog', help="use a logarithmic x-axis. disabled by default.", default=False, action='store_true')
     parser.add_argument('--color', help="color the histogram according to height. disabled by default.", default=False, action='store_true')
     parser.add_argument('--percentage', help="represent probability density by percentage instead of decimal. disabled by default.", default=False, action='store_true')
 
