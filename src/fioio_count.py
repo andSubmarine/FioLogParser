@@ -26,6 +26,8 @@ def build_io_count_graph(args, ax, results):
             ax.scatter(x_values, y_values, s=10)
         if args.logscale_y:
             ax.set_yscale('log')
+        else:
+            ax.set_ylim(bottom=0)
 
 def build_io_count_graphs(args):
     fig, ax = plt.subplots()
