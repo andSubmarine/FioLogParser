@@ -21,8 +21,8 @@ def filter_where(arr, k):
 def load(args): 
     lc = time_it(line_count, args.verbose, args.filepath, start_tag="Reading lines in file...", end_tag="Line Count Time")
     print("Lines in file: {}".format(lc))
-    limit = 1.0 if args.limit < 0.0 or args.limit > 1.0 else args.limit
-    N = int((lc+1) * limit)
+    load_limit = 1.0 if args.load_limit < 0.0 or args.load_limit > 1.0 else args.load_limit
+    N = int((lc+1) * load_limit)
     values = np.zeros(N)
     start_time = time.time_ns()
     if args.verbose:
@@ -58,27 +58,36 @@ def color_hist(ax, N, bins, patches):
         color = plt.cm.viridis(norm(thisfrac))
         thispatch.set_facecolor(color)
 
+def determine_ylabel(args):
+    if args.hist_mode == "pdf":
+        return "Probability density"
+    elif args.hist_mode == "cdf":
+        return "Cumulative density"
+    else:
+        return "Samples Per Bin"
+
+def hist(ax, args, sample, smin, smax):
+    b = int(args.bins) if not args.xlog else 10 ** np.linspace(np.log10(smin), np.log10(smax), int(args.bins))
+    if args.hist_mode == "pdf":
+        weights = np.ones_like(sample)/float(len(sample))
+        return ax.hist(sample, bins=b, weights=weights, log=args.ylog, range=(smin, smax)) 
+    elif args.hist_mode == "cdf":
+        return ax.hist(sample, bins=b, density=True, cumulative=True, log=args.ylog, range=(smin, smax)) 
+    else: 
+        return ax.hist(sample, bins=b, log=args.ylog, range=(smin, smax)) 
+
 def histogram(args, sample, smin, smax):
     fig, ax = plt.subplots()
-    b = int(args.bins) if not args.xlog else 10 ** np.linspace(np.log10(smin), np.log10(smax), int(args.bins))
-    useDensity = args.hist_mode != "val" # If True, draw and return a probability density: each bin will display the bin's raw count divided by the total number of counts and the bin width, so that the area under the histogram integrates to 1
-    useCumulative = args.hist_mode == "cdf" # If True, then a histogram is computed where each bin gives the counts in that bin plus all bins for smaller values. The last bin gives the total number of datapoints which is normalized to 1 due to density
-    # useStacked = args.hist_mode == "pdf" # If True and Density is True, then the sum of the histograms is normalized to 1.
-    N, bins, patches = ax.hist(sample, bins=b, density=useDensity, cumulative=useCumulative, log=args.ylog, range=(smin, smax))
+    N, bins, patches = hist(ax, args, sample, smin, smax)
     if (args.color):
         color_hist(ax, N, bins, patches)
-    ax.set(xlabel=args.xlabel, ylabel="Propability density",title="Distribution of measurement values")
+    ax.set(xlabel=args.xlabel, ylabel=determine_ylabel(args),title="Distribution of measurement values")
     if args.min:
         ax.set_xlim(left=int(args.min))
     if not args.ylog: 
         ax.set_ylim(bottom=0)
     if (args.percentage):
         ax.yaxis.set_major_formatter(PercentFormatter(xmax=1,decimals=3))
-    if(args.windowed):
-        plt.show()
-    else:
-        plt.savefig(args.output)
-    plt.close()
     
 def normal_distribution(args, sample, smin, smax): 
     if (args.verbose): # calculate parameters
@@ -99,14 +108,10 @@ def normal_distribution(args, sample, smin, smax):
     if (args.verbose): # plot the histogram and pdf
         print("Plot the histogram and pdf...")
     fig, ax = plt.subplots()
-    b = int(args.bins) if not args.xlog else 10 ** np.linspace(np.log10(smin), np.log10(smax), int(args.bins))
-    useDensity = args.hist_mode != "val" # If True, draw and return a probability density: each bin will display the bin's raw count divided by the total number of counts and the bin width, so that the area under the histogram integrates to 1
-    useCumulative = args.hist_mode == "cdf" # If True, then a histogram is computed where each bin gives the counts in that bin plus all bins for smaller values. The last bin gives the total number of datapoints which is normalized to 1 due to density
-    # useStacked = args.hist_mode == "pdf" # If True and Density is True, then the sum of the histograms is normalized to 1.
-    N, bins, patches = ax.hist(sample, bins=b, density=useDensity, cumulative=useCumulative, log=args.ylog, range=(smin, smax))
+    N, bins, patches = hist(ax, args, sample, smin, smax)
     if (args.color):
         color_hist(ax, N, bins, patches)
-    ax.set(xlabel=args.xlabel, ylabel="Propability density",title="Parametric Density Estimation")
+    ax.set(xlabel=args.xlabel, ylabel=determine_ylabel(args),title="Parametric Density Estimation")
     if (args.percentage):
         ax.yaxis.set_major_formatter(PercentFormatter(xmax=1,decimals=3))
     ax.plot(values, probabilities)
@@ -114,11 +119,6 @@ def normal_distribution(args, sample, smin, smax):
         ax.set_xlim(left=int(args.min))
     if not args.ylog: 
         ax.set_ylim(bottom=0)
-    if(args.windowed):
-        plt.show()
-    else:
-        plt.savefig(args.output)
-    plt.close()
 
 def determine_bandwidth(args, train):
     # determine optimal bandwidth based on training dataset
@@ -171,37 +171,27 @@ def kernel_density(args, sample, smin, smax):
     if (args.verbose): # plotting histogram and pdf
         print("Plotting histogram and pdf...")
     fig, ax = plt.subplots()
-    b = int(args.bins) if not args.xlog else 10 ** np.linspace(np.log10(smin), np.log10(smax), int(args.bins))
-    useDensity = args.hist_mode != "val" # If True, draw and return a probability density: each bin will display the bin's raw count divided by the total number of counts and the bin width, so that the area under the histogram integrates to 1
-    useCumulative = args.hist_mode == "cdf" # If True, then a histogram is computed where each bin gives the counts in that bin plus all bins for smaller values. The last bin gives the total number of datapoints which is normalized to 1 due to density
-    # useStacked = args.hist_mode == "pdf" # If True and Density is True, then the sum of the histograms is normalized to 1.
-    N, bins, patches = ax.hist(sample, bins=b, density=useDensity, cumulative=useCumulative, log=args.ylog, range=(smin, smax))
+    N, bins, patches = hist(ax, args, sample, smin, smax)
     if (args.color):
         color_hist(ax, N, bins, patches)
     if (args.percentage):
         ax.yaxis.set_major_formatter(PercentFormatter(xmax=1,decimals=3))
     ax.plot(values[:], probabilities, label=args.kmode)
-    ax.set(xlabel=args.xlabel, ylabel="Propability density",title="Kernel Density Estimation")
+    ax.set(xlabel=args.xlabel, ylabel=determine_ylabel(args),title="Kernel Density Estimation")
     if args.min:
         ax.set_xlim(left=int(args.min))
     if not args.ylog: 
         ax.set_ylim(bottom=0)
     ax.legend()
-    if(args.windowed):
-        plt.show()
-    else:
-        plt.savefig(args.output)
-    plt.close()
 
 def run(args):
+    start_time = time.time_ns()
     # load and parse input
-    sample = load(args)
-    if (args.verbose):
-        print("File '{}' has been loaded".format(args.filepath))
+    sample = time_it(load,args.verbose, args, end_tag="File loading time")
     
     # calculate min and max values of sample data
-    sample_min = np.min(sample) if not args.min else int(args.min)
-    sample_max = int(args.max) if args.max and not args.outlier_cutoff else np.max(sample) if not args.outlier_cutoff else int(args.outlier_cutoff)
+    sample_min = int(args.min) if args.min else np.min(sample)
+    sample_max = int(args.max) if args.max else np.max(sample)
     if (args.verbose):
         print("Min value: {}, Max value: {}".format(sample_min, sample_max))
 
@@ -212,6 +202,13 @@ def run(args):
         kernel_density(args, sample, sample_min, sample_max)
     else:
         histogram(args,sample, sample_min, sample_max)
+        
+    print("Completed turning log file(s) into graph ({:.3f} sec).".format((time.time_ns() - start_time) / 1E9))
+    if(args.windowed):
+        plt.show()
+    else:
+        plt.savefig(args.output)
+    plt.close()
 
 def main():
     parser = argparse.ArgumentParser()
@@ -223,7 +220,7 @@ def main():
     parser.add_argument('-v','--verbose', help="print more information while running script", default=False, action='store_true')
     parser.add_argument('-w','--windowed', help="instead of writing to file then show in window", default=False, action='store_true')
     parser.add_argument('-o','--output', help="filepath for the built graph. defaults to 'output-hist.png'", default="output-hist.png")
-    parser.add_argument('-l','--limit', help="limits the amount of data to be loaded into the graph. provide as decimal percentage. defaults to 1.", default=1.0, type=float)
+    parser.add_argument('-ll','--load_limit', help="limits the amount of data to be loaded into the graph. provide as decimal percentage. defaults to 1.", default=1.0, type=float)
     parser.add_argument('--xlabel', help="label for x-axis. defaults to 'Latency (usec)'", default="Latency (usec)")
     parser.add_argument('--kmode', help="decide what kernel density estimation method to use. defaults to 'gaussian'", 
                         choices=["gaussian", "tophat", "epanechnikov"], default="gaussian")
@@ -233,7 +230,7 @@ def main():
     parser.add_argument('--max', help="specify maximum data value for range.")
     parser.add_argument('--ylog', help="use a logarithmic y-axis. disabled by default.", default=False, action='store_true')
     parser.add_argument('--xlog', help="use a logarithmic x-axis. disabled by default.", default=False, action='store_true')
-    parser.add_argument('--color', help="color the histogram according to height. disabled by default.", default=False, action='store_true')
+    parser.add_argument('--color', help="color the histogram according to height. disabled by default.", default=True, action='store_true')
     parser.add_argument('--percentage', help="represent probability density by percentage instead of decimal. disabled by default.", default=False, action='store_true')
     parser.add_argument('-hm', '--hist_mode', help="select a mode for how the histogram should represent probability density. defaults to 'pdf'", default="pdf", choices=["pdf","cdf","val"])
     parser.add_argument('--training_split', help="how large a fraction that the training data should be out of total dataset. defaults to 0.5, i.e. 50%", default=0.5, type=float)
@@ -243,9 +240,7 @@ def main():
     args = parser.parse_args()
     print("Welcome to FioLogParser - Histograms!")
     print("Building graph '{}' in mode '{}' from '{}'".format(args.output, args.mode, args.filepath))
-    start_time = time.time_ns()
     run(args)
-    print("Completed turning log file(s) into graph ({:.3f} sec).".format((time.time_ns() - start_time) / 1E9))
 
 if __name__ == '__main__':
     main()
