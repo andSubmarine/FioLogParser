@@ -10,8 +10,10 @@ files=(${HOME_FOLDER}/*${JOBNAME}_${METRIC}.*.log)
 for f in ${files[@]}
 do 
     name="$(basename -s .log $f)"
-    python ../src/fiohistogram.py -f "$f" -m simple -o "$name-hist.png" --outlier_cutoff 15 --bins 1000
-    python ../src/fiohistogram.py -f "$f" -m simple -o "$name-hist-ylog.png" --outlier_cutoff 15 --bins 1000 --ylog
-    python ../src/fiohistogram.py -f "$f" -m normal -o "$name-hist-normal.png" --outlier_cutoff 15 --bins 1000 -v
-    python ../src/fiohistogram.py -f "$f" -m kernel -o "$name-hist-kernel.png" --outlier_cutoff 15 --bins 1000 -v
+    python ../src/fiohistogram.py -f "$f" -m simple -o "$name-hist.png" --bins 100
+    python ../src/fiohistogram.py -f "$f" -m simple -o "$name-hist-ylog.png" --bins 100 --ylog
+    python ../src/fiohistogram.py -f "$f" -m simple -o "$name-cdf.png" --bins 100 -hm cdf
+    python ../src/fiohistogram.py -f "$f" -m normal -o "$name-hist-normal.png" --bins 100 -v
+    # warning enabling the next line will slow down execution considerably due to model training - use limit and/or cutoff to reduce dataset
+    # python ../src/fiohistogram.py -f "$f" -m kernel -o "$name-hist-kernel.png" --bins 100 -v -c 20 -ll 0.1 -kbw 0.5 
 done
