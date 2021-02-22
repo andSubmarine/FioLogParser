@@ -10,14 +10,25 @@ Run the following to setup the required packages to run FioLogParser and associa
 pip install -r requirements.txt
 ```
 
+Want to test that your setup works? Run the script `simple-example.sh` in the `/examples` folder and see if it generates the `output.png` graph.
+
 ## FioLogParser
-### Quick Start
 The purpose of FioLogParser is to provide a general-purpose interface to scripts such as `fioelapsed.py` which generate different kinds of graphs based on Fio log files. 
 
-If you want to get started quickly with parsing a log file and building a graph then you can use the following command in the `/src` folder:
+### Quick Start
+If you want to get started quickly with parsing a log file and building a graph then you can try out one of the following scripts found in the `/examples` folder:
+
+- `graph-ios-builder.sh`: Builds graphs in `ios` mode which shows how measurements evolve over the I/O requests being performed which are organized by time
+- `graph-io_count-builder.sh`: Builds graphs in `io_count` mode which shows how the number of the I/O requests evolves over time
+- `graph-hist-builder.sh`: Builds graphs with `fiohistogram` which shows how measurements are distributed in the log file - see Histogram section below for more details
+
+When running any of the above scripts, the script will prompt you for a directory to look for fio log files. Then it will prompt for the "log type", i.e. what kind of values that the log files contain. Finally, the script will prompt for the jobname used for logfile. For reference, the naming convention of log files is as follows:  `<jobname>_<logtype>.<jobnumber>.log`. Hint: if you want to build graphs for all jobs then simply use `*` instead of the jobname. The script will then automatically generate graphs for any files that it finds.
+
+### Getting Started
+If you want to get started with making your own custom types of graphs with FioLogParser then you can try to use the folloing command in the `/src` folder:
 
 ```
-python fiologparser -m ios -lt bw -f test_bw.1.log
+python fiologparser --mode ios --log_type bw --files ../test/test_bw.1.log
 ```
 
 The first required argument `-m` or `--mode` can either be `ios`, `io_count` or `elapsed` and determines the mode for parsing and building the graph. 
@@ -33,7 +44,7 @@ The second required argument `-lt` or `--log-type` can either be `bw`, `lat` or 
 The third required argument `-f` or `--files` should be used with a list of filepaths for the files that `fiologparser` should parse. 
 
 ### Advanced Usage
-The following can also be produced by running `fiologparser.py` with the `-h` or `--help` flag. 
+The following can also be produced by running `fiologparser.py` with the `-h` or `--help` flag. Please note that some options are primarily used for specific modes such as `--every_nth`.
 
 ```
 $> python fiologparser.py -h
@@ -62,3 +73,6 @@ optional arguments:
   -gt {default,bar,line,dots,errorbar}, --graphtype {default,bar,line,dots,errorbar}
                         the type of graph to be built. defaults to a mode-specific default
 ```
+
+### Advanced Usage - FioLogParser
+TBW
