@@ -26,6 +26,8 @@ Want to test that your setup works? Run the script `simple-example.sh` in the `/
 
 Note that you need to have Python 3 installed on your system in order to run FioLogParser - in case you are on git bash on windows you may have to create a alias for the python3 command to point to python in order to run the example scripts: `alias python3=python`. 
 
+In case you have issues running a script - you can try to change the first line in the script to `#!/usr/bin/env`.
+
 ## FioLogParser
 The purpose of FioLogParser is to provide a general-purpose interface to scripts such as `fioelapsed.py` which generate different kinds of graphs based on Fio log files. 
 
