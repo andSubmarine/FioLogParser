@@ -170,7 +170,7 @@ def split(args, sample):
     if (args.verbose):
         print("Splitting dataset into training and test datasets...")
     if not args.kernel_bandwidth and args.training_split:
-        train, validate = np.split(sample, [int(len(sample)*args.training_split), int(len(sample)*1)])
+        train, validate = np.split(sample, [int(len(sample)*args.training_split)])
         print("Train dataset: {} samples ({}%), ".format(len(train), args.training_split * 100))        
         print("Validation dataset: {} samples ({}%), ".format(len(validate), (1-args.training_split) * 100))
         return (train, validate)
