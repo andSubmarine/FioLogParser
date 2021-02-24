@@ -10,5 +10,5 @@ files=(${HOME_FOLDER}/*${JOBNAME}_${METRIC}.*.log)
 for f in ${files[@]}
 do 
     name="$(basename -s .log $f)"
-    python ../src/fiologparser.py -m ios -lt "${METRIC}" --title "Measurement value per I/O" -o "$name-ios-ylog.png" -f "$f" -ylog
+    python3 ../src/fiologparser.py -m ios -lt "${METRIC}" --title "Measurement value per I/O" -o "$name-ios-ylog.png" -f "$f" -ylog
 done

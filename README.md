@@ -24,6 +24,8 @@ pip install -r requirements.txt
 
 Want to test that your setup works? Run the script `simple-example.sh` in the `/examples` folder and see if it generates the `output.png` graph.
 
+Note that you need to have Python 3 installed on your system in order to run FioLogParser - in case you are on git bash on windows you may have to create a alias for the python3 command to point to python in order to run the example scripts: `alias python3=python`. 
+
 ## FioLogParser
 The purpose of FioLogParser is to provide a general-purpose interface to scripts such as `fioelapsed.py` which generate different kinds of graphs based on Fio log files. 
 
@@ -40,7 +42,7 @@ When running any of the above scripts, the script will prompt you for a director
 If you want to get started with making your own custom types of graphs with FioLogParser then you can try to use the folloing command in the `/src` folder:
 
 ```
-python fiologparser --mode ios --log_type bw --files ../test/test_bw.1.log
+python3 fiologparser --mode ios --log_type bw --files ../test/test_bw.1.log
 ```
 
 The first required argument `-m` or `--mode` can either be `ios`, `io_count` or `elapsed` and determines the mode for parsing and building the graph. These arguments are explained in detail in the next few sections.
@@ -109,7 +111,7 @@ optional arguments:
 The amount of optional arguments for FioLogParser is substantial and can be quite confusing. In order to help explain some of these, consider the following line from the `graph-io_count-builder.sh` script:
 
 ```
-python ../src/fiologparser.py -m io_count -lt "${METRIC}" --title "IOPS distribution over the course of experiment" --every_nth 1000 --same_time -o "$name-iocount.png" -f "$f"
+python3 ../src/fiologparser.py -m io_count -lt "${METRIC}" --title "IOPS distribution over the course of experiment" --every_nth 1000 --same_time -o "$name-iocount.png" -f "$f"
 ```
 
 Most of these arguments have already been explained by [Getting Started](#getting-started). However a few require more explanation - namely the every_nth and same_time arguments. By specifying these we ask FioLogParser that *it should not plot **every** value, but instead combine the values that exists **within the same second***. This is useful for multiple reasons - with these you can suddenly plot I/O requests per second (IOPS) and not just plot each IO. The major difference between `io_count` and `elapsed` for these arguments is that *`io_count` will summarize these traces* and *`elapsed` will average these traces*. Your use case determines what you want to plot.
@@ -120,9 +122,9 @@ A rather recent addition to FioLogParser is the introduction of `fiohistogram.py
 Like `fiologparser.py`, the new `fiohistogram.py` has a lot of different arguments and functions. To get started you should try to generate three graphs exemplified by the three first lines in `graph-hist-builder.sh`: 
 
 ```
-python ../src/fiohistogram.py -lt "${METRIC}" -f "$f" -m simple -o "$name-hist.png" --bins 100
-python ../src/fiohistogram.py -lt "${METRIC}" -f "$f" -m simple -o "$name-hist-ylog.png" --bins 100 --ylog
-python ../src/fiohistogram.py -lt "${METRIC}" -f "$f" -m simple -o "$name-cdf.png" --bins 100 -hm cdf  
+python3 ../src/fiohistogram.py -lt "${METRIC}" -f "$f" -m simple -o "$name-hist.png" --bins 100
+python3 ../src/fiohistogram.py -lt "${METRIC}" -f "$f" -m simple -o "$name-hist-ylog.png" --bins 100 --ylog
+python3 ../src/fiohistogram.py -lt "${METRIC}" -f "$f" -m simple -o "$name-cdf.png" --bins 100 -hm cdf  
 ```
 
 Let's go through them one by one. The first creates a simple histogram where each measurement value is put in one out of 100 bins. *Each bin will then span about 1/100th of the range between the minimum and maximum value of the dataset*. Consider the following graph as an example which is the result of running the command on `test_bw.1.log` found in the `/test` folder. The default histogram mode (i.e. `--hist_mode`) is set to generate the histogram as a probability density function (`pdf`) which means that the height of each column on the histogram shows large a percentage of values fit into the associative bin. This example graph shows a [*multimodal distribution*](https://en.wikipedia.org/wiki/Multimodal_distribution) - your graph might show something entirely different.
@@ -140,7 +142,7 @@ The final command listed in the previous code block generates a different kind o
 Why does it matter if there is a multimodal distribution or something else? **Because if the distribution is not 'normal' then we can't rely on the mean to tell us anything useful**. The fourth line of the `graph-hist-builder.sh` script is an example of a different mode for `fiohistogram.py` - one which tries to plot a normal distribution over the dataset: 
 
 ```
-python ../src/fiohistogram.py -lt "${METRIC}" -f "$f" -m normal -o "$name-hist-normal.png" --bins 100 -v
+python3 ../src/fiohistogram.py -lt "${METRIC}" -f "$f" -m normal -o "$name-hist-normal.png" --bins 100 -v
 ```
 
 ![see ./test/test_bw.1-hist-normal.png](./test/test_bw.1-hist-normal.png)
@@ -149,7 +151,7 @@ Clearly, as seen on the graph, the distribution is multimodal and not normal - t
 
 ```
 # warning enabling the next line will slow down execution considerably due to model training - use limit and/or cutoff to reduce dataset
-# python ../src/fiohistogram.py -f "$f" -m kernel -o "$name-hist-kernel.png" --bins 100 -v -c 20 -ll 0.1 -kbw 0.5 
+# python3 ../src/fiohistogram.py -f "$f" -m kernel -o "$name-hist-kernel.png" --bins 100 -v -c 20 -ll 0.1 -kbw 0.5 
 ```
 
 ![see ./test/test_bw.1-hist-kernel.png](./test/test_bw.1-hist-kernel.png)

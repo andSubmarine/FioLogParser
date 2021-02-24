@@ -10,5 +10,5 @@ files=(${HOME_FOLDER}/*${JOBNAME}_${METRIC}.*.log)
 for f in ${files[@]}
 do 
     name="$(basename -s .log $f)"
-    python ../src/fiologparser.py -m io_count -lt "${METRIC}" --title "IOPS distribution over the course of experiment" --every_nth 1000 --same_time -o "$name-iocount.png" -f "$f"
+    python3 ../src/fiologparser.py -m io_count -lt "${METRIC}" --title "IOPS distribution over the course of experiment" --every_nth 1000 --same_time -o "$name-iocount.png" -f "$f"
 done
