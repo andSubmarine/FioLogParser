@@ -153,7 +153,7 @@ def determine_bandwidth(args, train):
         print("Determining optimal bandwidth...")
     start_time = time.time_ns()
     bandwidths = np.linspace(0.0, 5.0, 100, dtype=float)
-    grid = GridSearchCV(KernelDensity(kernel='gaussian', atol=args.absolute_tolerance, rtol=args.relative_tolerance),
+    grid = GridSearchCV(KernelDensity(kernel=args.kmode, atol=args.absolute_tolerance, rtol=args.relative_tolerance),
                         {'bandwidth': bandwidths})
     train = train.reshape((len(train), 1))
     grid.fit(train)
