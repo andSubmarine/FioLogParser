@@ -13,7 +13,8 @@ do
 	name="$(basename -s .fio $f)"	# filename without type
 	echo "Executing $name..."
 	fio $f > $name.txt	# run experiment
-	zip -m $name.zip $f $name.txt *.log # zip all related files and remove them from drive
+	sh graph-builder.sh "$HOME_FOLDER" "lat" "*"
+	zip -m $name.zip $f $name.txt *.log *.png # zip all related files and remove them from drive
 	echo "$name has completed."
 done
 echo "Experimentation complete. Please transfer and remove zip files."
