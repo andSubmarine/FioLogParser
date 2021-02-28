@@ -13,7 +13,7 @@ do
 	name="$(basename -s .fio $f)"	# filename without type
 	echo "Executing $name..."
 	fio $f > $name.txt	# run experiment
-	zip -m $name.zip $f $name.txt *.logs # zip all related files and remove them from drive
+	zip -m $name.zip $f $name.txt *.log # zip all related files and remove them from drive
 	echo "$name has completed."
 done
 echo "Experimentation complete. Please transfer and remove zip files."
