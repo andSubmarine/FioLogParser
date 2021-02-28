@@ -29,7 +29,7 @@ def time_it(process, verbose, *args, start_tag="", end_tag="Time"):
     else:
         return process(*args)
 
-def determine_ylabel(log_type):
+def metric_label(log_type):
     if (log_type == "bw"):
         return "Bandwidth (MiB/sec)" #MiB instead of KiB due to division by 1000
     elif (log_type == "lat"):

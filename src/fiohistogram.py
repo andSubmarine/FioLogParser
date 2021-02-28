@@ -13,7 +13,7 @@ from sklearn.neighbors import KernelDensity
 from sklearn.model_selection import GridSearchCV, LeaveOneOut
 
 from line_count import line_count
-from fio_utils import time_it
+from fio_utils import time_it, metric_label
 
 def filter_where(arr, k):
     return arr[np.where(arr < k)]
@@ -93,7 +93,7 @@ def histogram(args, sample, smin, smax):
     N, bins, patches = hist(ax, args, sample, smin, smax)
     if (args.color):
         color_hist(ax, N, bins, patches)
-    ax.set(xlabel=args.xlabel, ylabel=determine_ylabel(args),title="Distribution of measurement values")
+    ax.set(xlabel=metric_label(args.logtype), ylabel=determine_ylabel(args),title="Distribution of measurement values")
     if args.min:
         ax.set_xlim(left=int(args.min))
     if not args.ylog: 
@@ -127,7 +127,7 @@ def normal_distribution(args, sample, smin, smax):
     N, bins, patches = hist(ax, args, sample, smin, smax)
     if (args.color):
         color_hist(ax, N, bins, patches)
-    ax.set(xlabel=args.xlabel, ylabel=determine_ylabel(args),title="Parametric Density Estimation")
+    ax.set(xlabel=metric_label(args.logtype), ylabel=determine_ylabel(args),title="Parametric Density Estimation")
     if (args.percentage):
         ax.yaxis.set_major_formatter(PercentFormatter(xmax=1,decimals=3))
     ax.plot(values, probabilities)
@@ -170,7 +170,7 @@ def split(args, sample):
     if (args.verbose):
         print("Splitting dataset into training and test datasets...")
     if not args.kernel_bandwidth and args.training_split:
-        train, validate = np.split(sample, [int(len(sample)*args.training_split), int(len(sample)*1)])
+        train, validate = np.split(sample, [int(len(sample)*args.training_split)])
         print("Train dataset: {} samples ({}%), ".format(len(train), args.training_split * 100))        
         print("Validation dataset: {} samples ({}%), ".format(len(validate), (1-args.training_split) * 100))
         return (train, validate)
@@ -224,7 +224,7 @@ def kernel_density(args, sample, smin, smax):
     if (args.percentage):
         ax.yaxis.set_major_formatter(PercentFormatter(xmax=1,decimals=3))
     ax.plot(values[:], probabilities, label=args.kmode)
-    ax.set(xlabel=args.xlabel, ylabel=determine_ylabel(args),title="Kernel Density Estimation")
+    ax.set(xlabel=metric_label(args.logtype), ylabel=determine_ylabel(args),title="Kernel Density Estimation")
     if args.min:
         ax.set_xlim(left=int(args.min))
     if not args.ylog: 
@@ -275,6 +275,8 @@ def main():
     parser.add_argument('-f','--filepath', help='absolute/relative filepaths for file to parse', required=True)
     parser.add_argument('-m','--mode', help="histogram mode used for parsing and building graphs", 
                         choices=["simple","normal", "kernel"], required=True)
+    parser.add_argument('-lt','--logtype', help="the type for values in files", 
+                        default="bw", choices=["bw","lat","iops"],required=True)
 
     # optional arguments - general
     parser.add_argument('-v','--verbose', help="print more information while running script", default=False, action='store_true')
@@ -303,7 +305,6 @@ def main():
     parser.add_argument('-rtol','--relative_tolerance', help="specify the relative tolerance for kernel estimation. defaults to '0.0'", default=0.0, type=float)
 
     # optional arguments - visuals
-    parser.add_argument('--xlabel', help="label for x-axis. defaults to 'Latency (usec)'", default="Latency (usec)")
     parser.add_argument('--ylog', help="use a logarithmic y-axis. disabled by default.", default=False, action='store_true')
     parser.add_argument('--xlog', help="use a logarithmic x-axis. disabled by default.", default=False, action='store_true')
     parser.add_argument('--color', help="color the histogram according to height. disabled by default.", default=False, action='store_true')

@@ -8,7 +8,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 from line_count import line_count
-from fio_utils import determine_ylabel, combine, simply_filename, every_nth, not_same_every_nth, file_check, time_it, elapsed_time_string
+from fio_utils import metric_label, combine, simply_filename, every_nth, not_same_every_nth, file_check, time_it, elapsed_time_string
 
 ###################################################
 # IO COUNT MODE
