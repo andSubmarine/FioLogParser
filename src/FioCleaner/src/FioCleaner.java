@@ -109,7 +109,6 @@ public class FioCleaner{
     private static void ExtractDate(String line, JobInfo job) {
         String[] splittedLine = line.split(":");
         job.DATE = splittedLine[4].trim() +":"+ splittedLine[5] +":" + splittedLine[6];
-
     }
 
     private static JobInfo ExtractCPU(Scanner scanner, JobInfo job) {
