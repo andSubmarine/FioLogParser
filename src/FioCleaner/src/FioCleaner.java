@@ -25,20 +25,28 @@ public class FioCleaner{
     public static void main(String[] args) {
         CheckArguments(args);
 
-        File inputFile = new File(args[0]);
-        int jobs = Integer.parseInt(args[1]);
-        ArrayList<JobInfo> FioJobs = GetFioObjects(inputFile, jobs);
+        int numberOfFiles = Integer.parseInt(args[0]);
+        File[] inputFiles = new File[numberOfFiles+1];
+        for (int i = 1; i < numberOfFiles+1; i++) {
+            inputFiles[i] = new File(args[i]);
+        }
+        int jobs = Integer.parseInt(args[numberOfFiles+1]);
+        ArrayList<JobInfo> FioJobs = GetFioObjects(inputFiles, jobs);
         myFioJobs = FioJobs;
         PrintLatexTable(FioJobs);
 
         //Must be run twice, one for together-chart and one for alone chart...
         //CreateBarCharts instantiates BarChartAlone() when javaFxLaunched flag is true.
-        boolean clatExists = DoesClatExist(inputFile.getPath());
-        if (clatExists){
-            BarChartTogether bct = new BarChartTogether();
-            CreateBarCharts(bct.getClass());
-            CreateBarCharts(bct.getClass());
+
+        for (int i = 1; i < numberOfFiles; i++) {
+            boolean clatExists = DoesClatExist(inputFiles[i].getPath());
+            if (clatExists){
+                BarChartTogether bct = new BarChartTogether();
+                CreateBarCharts(bct.getClass());
+                CreateBarCharts(bct.getClass());
+            }
         }
+
 
     }
 
@@ -64,33 +72,38 @@ public class FioCleaner{
     }
 
 
-    public static ArrayList<JobInfo> GetFioObjects(File inputFile, int numJobs) {
+    public static ArrayList<JobInfo> GetFioObjects(File[] inputFiles, int numJobs) {
         //Get jobnames
-        try {
-            Scanner scanner = new Scanner(inputFile);
-            ArrayList<JobInfo> jobs = GetJobNames(numJobs, scanner);
+        ArrayList<JobInfo> result = new ArrayList<>();
+        for (int i=1; i < inputFiles.length; i++){
+            try {
+                Scanner scanner = new Scanner(inputFiles[i]);
+                ArrayList<JobInfo> jobs = GetJobNames(numJobs, scanner);
 
-            while(scanner.hasNextLine()){
-                String currentLine = scanner.nextLine();
-                for (JobInfo job : jobs){
-                    if (currentLine.startsWith(job.NAME)){
-                        ExtractDate(currentLine, job);
-                        ExtractBWandIOPS(scanner, job);
-                        ExtractLAT(scanner,job);
-                        boolean clatExists = DoesClatExist(inputFile.getPath());
-                        if (clatExists){
-                            ExtractCLATPercentiles(scanner,job);
+                while(scanner.hasNextLine()){
+                    String currentLine = scanner.nextLine();
+                    for (JobInfo job : jobs){
+                        if (job.NAME.startsWith("warmup")) continue;
+                        if (currentLine.startsWith(job.NAME)){
+                            ExtractDate(currentLine, job);
+                            ExtractBWandIOPS(scanner, job);
+                            ExtractLAT(scanner,job);
+                            boolean clatExists = DoesClatExist(inputFiles[i].getPath());
+                            if (clatExists){
+                                ExtractCLATPercentiles(scanner,job);
+                            }
+                            ExtractCPU(scanner,job);
+                            result.add(job);
                         }
-                        ExtractCPU(scanner,job);
+
                     }
                 }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                return null;
             }
-            return jobs;
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return null;
         }
+        return result;
     }
 
     private static void ExtractDate(String line, JobInfo job) {
@@ -236,10 +249,13 @@ public class FioCleaner{
 
 
     public static void CheckArguments(String[] args) {
-        if(args.length != 2) {
-            System.out.println("Script must be run with 2 arguments");
-            System.out.println("The first argument must be the input Fio file");
-            System.out.println("The second argument must be the number of benchmarks in the Fio file");
+        if(args.length != 4) {
+            System.out.println("Script must be run with 3 arguments");
+            System.out.println("The first argument must be the n number of Fio files to parse");
+            System.out.println("The second argument must be the n amount of input Fio files");
+            System.out.println("The third argument is a single number of benchmarks in each Fio file. ");
+            System.out.println("Example run: ");
+            System.out.println("java FioCleaner.java 3 clat.txt flat.txt olat.txt 2");
             return;
         }
     }
