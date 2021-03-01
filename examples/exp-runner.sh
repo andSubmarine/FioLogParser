@@ -13,7 +13,7 @@ do
 	name="$(basename -s .fio $f)"	# filename without type
 	echo "Executing $name..."
 	fio $f > $name.txt	# run experiment
-	logfiles=(${HOME_FOLDER}/*_lat.*.log)
+	logfiles=(*_lat.*.log)
 	for lf in ${logfiles[@]}
 	do
 		python3 ../src/fiologparser.py -m io_count -lt lat --title "IOPS distribution over the course of experiment" --every_nth 1000 --same_time -o "$name-iocount.png" -f "$lf"
@@ -21,7 +21,7 @@ do
 		python3 ../src/fiohistogram.py -m simple -lt lat -f "$lf" -o "$name-hist.png" --bins 100
 		python3 ../src/fiohistogram.py -m simple -lt lat -f "$lf" -o "$name-hist-ylog.png" --bins 100 --ylog
 	done
-	zip -m $name.zip $f $name.txt *.log $name*.png  # zip all related files and remove them from drive
+	zip -m ${HOME_FOLDER}/$name.zip $f $name.txt *.log $name*.png  # zip all related files and remove them from drive
 	echo "$name has completed."
 done
 echo "Experimentation complete. Please transfer and remove zip files."
