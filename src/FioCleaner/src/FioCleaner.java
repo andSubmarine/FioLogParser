@@ -203,7 +203,7 @@ public class FioCleaner{
         }
         String unitOfMeasurement = latLine.substring(5,9);
 
-        String[] splittedString = latLine.split(" ");
+        String[] splittedString = latLine.replaceAll("\\s+","").split(",");
         for (int i = 0; i < splittedString.length; i++) {
             if(splittedString[i].startsWith("avg")){
                 String[] splitAvg = splittedString[i].split("=");
@@ -249,8 +249,7 @@ public class FioCleaner{
 
 
     public static void CheckArguments(String[] args) {
-        if(args.length != 4) {
-            System.out.println("Script must be run with 3 arguments");
+        if(IsInteger(args[0]) && IsInteger(args[args.length-1])) {
             System.out.println("The first argument must be the n number of Fio files to parse");
             System.out.println("The second argument must be the n amount of input Fio files");
             System.out.println("The third argument is a single number of benchmarks in each Fio file. ");
@@ -312,13 +311,24 @@ public class FioCleaner{
         }
 
         System.out.println("\\end{tabular}");
-        System.out.println("\\caption{" + fioJobs.get(1).DATE +"}");
+        System.out.println("\\caption{" + fioJobs.get(0).DATE +"}");
         System.out.println("\\end{table}");
     }
 
 
     public static ArrayList<JobInfo> GetFioJobs(){
         return myFioJobs;
+    }
+
+    private static boolean IsInteger(String s){
+        int intValue = 0;
+        try {
+            intValue = Integer.parseInt(s);
+            return true;
+        } catch (NumberFormatException e) {
+            System.out.println("Input String cannot be parsed to Integer.");
+            return false;
+        }
     }
 
 }
