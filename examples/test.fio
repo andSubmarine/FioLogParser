@@ -1,0 +1,20 @@
+[global]
+# experiment parameters and levels
+bs=4k
+iodepth=1
+numjobs=1
+rw=read
+
+# config
+size=512g	# size of disk
+filename=/dev/nvme0n1	# mount
+ioengine=external:/usr/lib/libxnvme-fio-engine.so
+group_reporting
+time_based
+direct=1
+thread=1
+
+[test]
+runtime=10s
+write_lat_log=test
+stonewall
