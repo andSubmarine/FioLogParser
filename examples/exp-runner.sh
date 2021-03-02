@@ -10,10 +10,17 @@ shopt -s nullglob
 files=(${HOME_FOLDER}/*.fio)
 for f in ${files[@]}
 do 
+	# run experiment
 	name="$(basename -s .fio $f)"	# filename without type
 	echo "Executing $name..."
-	fio $f > $name.txt	# run experiment
+	fio $f > $name.txt
+
+	# make graphs
 	logfiles=(*_lat.*.log)
+	max=$(python3 ../src/max_value_finder.py -f $logfiles 2>&1)
+	echo "MAX=$max"
+	iops=$(python3 ../src/max_value_finder.py -f $logfiles --iopsmax 2>&1)
+	echo "MAX_IOPS=$iops"
 	for lf in ${logfiles[@]}
 	do
 		python3 ../src/fiologparser.py -m io_count -lt lat --title "IOPS distribution over the course of experiment" --every_nth 1000 --same_time -o "$name-iocount.png" -f "$lf"
@@ -21,7 +28,9 @@ do
 		python3 ../src/fiohistogram.py -m simple -lt lat -f "$lf" -o "$name-hist.png" --bins 100
 		python3 ../src/fiohistogram.py -m simple -lt lat -f "$lf" -o "$name-hist-ylog.png" --bins 100 --ylog
 	done
-	zip -m ${HOME_FOLDER}/$name.zip $f $name.txt *.log $name*.png  # zip all related files and remove them from drive
+
+  	# zip all related files and remove them from drive
+	zip -m ${HOME_FOLDER}/$name.zip $f $name.txt *.log $name*.png
 	echo "$name has completed."
 done
 echo "Experimentation complete. Please transfer and remove zip files."
