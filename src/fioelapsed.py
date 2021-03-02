@@ -34,7 +34,11 @@ def build_elapsed_graphs(args):
         if args.logscale_y:
             ax.set_yscale('log')
         else:
-            ax.set_ylim(bottom=0)
+            if(args.axisalign):
+                ax.set_ylim(bottom=0, top=args.axisalign)
+            else:
+                ax.set_ylim(bottom=0)
+
     ax.legend([simply_filename(f) for f in args.files], loc="upper right")
     ax.set(xlabel="Elapsed time (sec)", ylabel=ylabel,title=args.title)
     ax.grid()
