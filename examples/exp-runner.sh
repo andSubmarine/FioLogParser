@@ -23,10 +23,10 @@ do
 	echo "MAX_IOPS=$iops"
 	for lf in ${logfiles[@]}
 	do
-		python3 ../src/fiologparser.py -m io_count -lt lat --title "IOPS distribution over the course of experiment" --every_nth 1000 --same_time -o "$name-iocount.png" -f "$lf"
-		python3 ../src/fiologparser.py -m ios -lt lat --title "Measurement value per I/O" -o "$name-ios-ylog.png" -f "$lf" -ylog
-		python3 ../src/fiohistogram.py -m simple -lt lat -f "$lf" -o "$name-hist.png" --bins 100
-		python3 ../src/fiohistogram.py -m simple -lt lat -f "$lf" -o "$name-hist-ylog.png" --bins 100 --ylog
+		python3 ../src/fiologparser.py -m io_count -lt lat --title "IOPS distribution over the course of experiment" --every_nth 1000 --same_time -o "$name-iocount.png" -f "$lf"  -aa "$iops" 
+		python3 ../src/fiologparser.py -m ios -lt lat --title "Measurement value per I/O" -o "$name-ios-ylog.png" -f "$lf" -ylog -aa "$max"
+		python3 ../src/fiohistogram.py -m simple -lt lat -f "$lf" -o "$name-hist.png" --bins 100 --max "$max"
+		python3 ../src/fiohistogram.py -m simple -lt lat -f "$lf" -o "$name-hist-ylog.png" --bins 100 --ylog --max "$max"
 	done
 
   	# zip all related files and remove them from drive
