@@ -33,15 +33,17 @@ fi
 # go through log files and run fiohistogram.py on each
 shopt -s nullglob
 files=(${HOME_FOLDER}/*${JOBNAME}_${METRIC}.*.log)
-max=$(python3 ../src/max_value_finder.py -f $files 2>&1)
+echo "Find MAX and MAX_IOPS in '${files[@]}'..."
+maxes=$(python3 ../src/max_value_finder.py -f ${files[@]} -m both 2>&1)
+max=$(echo $maxes | cut -f1 -d " ")
+iops=$(echo $maxes | cut -f2 -d " ")
 echo "MAX=$max"
-iops=$(python3 ../src/max_value_finder.py -f $files --iopsmax 2>&1)
 echo "MAX_IOPS=$iops"
 for f in ${files[@]}
 do 
     name="$(basename -s .log $f)"
     echo "Processing $name..."
-    python3 ../src/fiologparser.py -m io_count -lt "${METRIC}" --title "IOPS distribution over the course of experiment" --every_nth 1000 --same_time -o "$name-iocount.png" -f "$f" -aa "$iops"
+    python3 ../src/fiologparser.py -m io_count -lt "${METRIC}" --title "IOPS distribution over the course of experiment" -o "$name-iocount.png" -f "$f" -aa "$iops"
     python3 ../src/fiologparser.py -m ios -lt "${METRIC}" --title "Measurement value per I/O" -o "$name-ios-ylog.png" -f "$f" -ylog -aa "$max"
     python3 ../src/fiohistogram.py -lt "${METRIC}" -f "$f" -m simple -o "$name-hist.png" --bins 100 --max "$max"
     python3 ../src/fiohistogram.py -lt "${METRIC}" -f "$f" -m simple -o "$name-hist-ylog.png" --bins 100 --ylog --max "$max"
