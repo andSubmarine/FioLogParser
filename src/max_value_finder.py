@@ -1,8 +1,8 @@
-
 import sys
 import os
 import re
 import time
+import math
 import argparse
 
 from fio_utils import file_check
@@ -11,7 +11,6 @@ def find_max_from_files(files):
     currentMaxValue = 0
     for i in range(len(files)):
         filepath = files[i]
-        file_check(filepath)
         with open(filepath) as f:
             for i, line in enumerate(f):
                 nextLatencyArray = re.split(", ", line)
@@ -25,7 +24,6 @@ def find_iopsmax(files):
     maxNumberOfTraces = 0
     for i in range(len(files)):
         filepath = files[i]
-        file_check(filepath)
         ThousandCounter = 1000
         with open(filepath) as f:
             numberOfTraces = 0
@@ -47,7 +45,8 @@ def find_iopsmax(files):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-f','--files', nargs='+', help='absolute/relative filepaths for files to parse', required=True)
-    parser.add_argument('-iopsmax','--iopsmax',  action='store_true', help='change from finding max value to finding maximum iops value')
+    parser.add_argument('--iopsmax',  action='store_true', help='change from finding max value to finding maximum iops value')
+    parser.add_argument('-v', '--verbose',  action='store_true', help='print more information')
     args = parser.parse_args()
 
     maxValue = 0
@@ -56,7 +55,12 @@ def main():
     else:    
         maxValue = find_max_from_files(args.files)
     
-    print("Max value found across '{}' files was '{}'".format(len(args.files), maxValue))
+    maxValue = int(math.ceil(maxValue))
+
+    if args.verbose:
+        print("Max value found across '{}' files was '{}'".format(len(args.files), maxValue))
+    else:
+        print(maxValue)
     
 if __name__ == '__main__':
     main()
