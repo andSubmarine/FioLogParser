@@ -80,5 +80,8 @@ def load_input_for_io_count(args, filepath):
                 time_now = time.time_ns()
                 print("Progress: {:.0f}% ({:.3f} msec)".format(((i / lc) * 100), (time_now - start_time) / 1E6),end="\r")
                 start_time = time_now
+        if count > 0:
+            y_values[k] = count
+            k += 1
     print()
     return (y_values[:k], x_values[:k])
