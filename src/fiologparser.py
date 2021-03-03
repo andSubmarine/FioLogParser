@@ -30,8 +30,12 @@ def main():
     parser.add_argument('-agg','--aggregate_files',default=False, action='store_true', help="aggregate results from multiple logs into a single data set")
     parser.add_argument('-gt','--graphtype', help="the type of graph to be built. defaults to a mode-specific default", 
                         default="default", choices=["default","bar","line","dots","errorbar"])
+    parser.add_argument('-aa','--axisalign', help="a single number determining the max value across log files in order to align the axis",
+                        type=int)
+
     args = parser.parse_args()
     start_time = time.time_ns()
+
     print("Building graph '{}' in mode '{}' as a '{}' graph from '{}' log file(s)".format(args.output, args.mode, args.graphtype, args.logtype))
     if args.mode == "elapsed":
         build_elapsed_graphs(args)

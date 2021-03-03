@@ -95,7 +95,9 @@ def histogram(args, sample, smin, smax):
         color_hist(ax, N, bins, patches)
     ax.set(xlabel=metric_label(args.logtype), ylabel=determine_ylabel(args),title="Distribution of measurement values")
     if args.min:
-        ax.set_xlim(left=int(args.min))
+        ax.set_xlim(left=int(args.min), right=smax)
+    else:
+        ax.set_xlim(right=smax)
     if not args.ylog: 
         ax.set_ylim(bottom=0)
     if (args.percentage):
@@ -137,7 +139,9 @@ def normal_distribution(args, sample, smin, smax):
         plt.axvline(x=sample_mean-sample_std, label="mean-std", c="r", linestyle="dashed")
         plt.legend()
     if args.min:
-        ax.set_xlim(left=int(args.min))
+        ax.set_xlim(left=int(args.min), right=smax)
+    else:
+        ax.set_xlim(right=smax)
     if not args.ylog: 
         ax.set_ylim(bottom=0)
 
@@ -226,7 +230,9 @@ def kernel_density(args, sample, smin, smax):
     ax.plot(values[:], probabilities, label=args.kmode)
     ax.set(xlabel=metric_label(args.logtype), ylabel=determine_ylabel(args),title="Kernel Density Estimation")
     if args.min:
-        ax.set_xlim(left=int(args.min))
+        ax.set_xlim(left=int(args.min), right=smax)
+    else:
+        ax.set_xlim(right=smax)
     if not args.ylog: 
         ax.set_ylim(bottom=0)
     ax.legend()

@@ -34,7 +34,11 @@ def build_elapsed_graphs(args):
         if args.logscale_y:
             ax.set_yscale('log')
         else:
-            ax.set_ylim(bottom=0)
+            if(args.axisalign):
+                ax.set_ylim(bottom=0, top=args.axisalign)
+            else:
+                ax.set_ylim(bottom=0)
+
     ax.legend([simply_filename(f) for f in args.files], loc="upper right")
     ax.set(xlabel="Elapsed time (sec)", ylabel=ylabel,title=args.title)
     ax.grid()
@@ -64,6 +68,7 @@ def load_input_for_elapsed(args, filepath):
     with open(filepath) as f:
         line_fraction = int(math.ceil(lc / 1E2))
         counter = 0
+        NthCounter = int(args.every_nth)
         time_now = 0
         log = []
         y_sum = 0
@@ -73,32 +78,34 @@ def load_input_for_elapsed(args, filepath):
         j = 1
         for i, line in enumerate(f):
             log = re.split(", ", line)
+            timeVal = int(log[0])
+            metricVal = int(log[1])
             if (i == 0):
-                y_sum += int(log[1])
-                y_high = int(log[1])
-                y_low = int(log[1])
+                y_sum = metricVal
+                y_high = metricVal
+                y_low = metricVal
                 j += 1
-            elif ((i == (lc-1)) or 
-                 (not args.same_time and every_nth(int(log[0]), args.every_nth)) 
-                 or (args.same_time and not_same_every_nth(int(log[0]), x_last, args.every_nth))):
+            elif ((i == (lc-1)) or # index is last line in file
+                 (timeVal > NthCounter)):
                 y_avg = y_sum / j
                 y_values[k] = y_avg / 1000
                 x_values[k] = x_last / 1000
                 y_lows[k] = y_low / 1000
                 y_highs[k] = y_high / 1000
-                y_sum = int(log[1])
-                y_high = int(log[1])
-                y_low = int(log[1])
+                y_sum = metricVal
+                y_high = metricVal
+                y_low = metricVal
                 j = 1
                 k += 1
+                NthCounter += int(args.every_nth)
             else:
-                y_sum += int(log[1])
-                if (int(log[1]) < y_low):
-                    y_low = int(log[1])
-                if (int(log[1]) > y_high):
-                    y_high = int(log[1])
+                y_sum += metricVal
+                if (metricVal < y_low):
+                    y_low = metricVal
+                if (metricVal > y_high):
+                    y_high = metricVal
                 j += 1
-            x_last = int(log[0])
+            x_last = timeVal
             if(counter % line_fraction == 0):
                 time_now = time.time_ns()
                 print("Progress: {:.0f}% ({:.3f} msec)".format(((counter / lc) * 100), (time_now - start_time) / 1E6),end="\r")

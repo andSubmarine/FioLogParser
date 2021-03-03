@@ -27,7 +27,10 @@ def build_io_count_graph(args, ax, results):
         if args.logscale_y:
             ax.set_yscale('log')
         else:
-            ax.set_ylim(bottom=0)
+            if(args.axisalign):
+                ax.set_ylim(bottom=0, top=args.axisalign)
+            else:
+                ax.set_ylim(bottom=0)
 
 def build_io_count_graphs(args):
     fig, ax = plt.subplots()
@@ -58,27 +61,27 @@ def load_input_for_io_count(args, filepath):
     k = 0
     if args.verbose:
         print("Starting reading input...")
+    ThousandCounter = 1000
     with open(filepath) as f:        
         line_fraction = int(math.ceil(lc / 1E2))
         last = 0
         count = 0
         for i, line in enumerate(f):
             log = re.split(", ", line)
-            if (i == 0):
-                last = int(log[0])
-                count += 1
-            # if not same value or trace is the last then output count and reset
-            elif ((i == (lc-1)) or 
-                not_same_every_nth(int(log[0]), last, args.every_nth)):
+            nextTime = (int(log[0]))
+            if(nextTime <= ThousandCounter):
+                count +=1
+            elif(nextTime > ThousandCounter):
                 y_values[k] = count
+                count = 0
+                ThousandCounter += 1000
                 k += 1
-                last = int(log[0])
-                count = 1
-            else:
-                count += 1
             if(i % line_fraction == 0):
                 time_now = time.time_ns()
                 print("Progress: {:.0f}% ({:.3f} msec)".format(((i / lc) * 100), (time_now - start_time) / 1E6),end="\r")
                 start_time = time_now
+        if count > 0:
+            y_values[k] = count
+            k += 1
     print()
     return (y_values[:k], x_values[:k])
