@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 # Given a folder and arguments to find log files, the graph-builder will run both fiologparser.py and fiohistogram.py on each logfile and generate 
 # the most typical graphs
 
@@ -9,6 +9,7 @@ case "$(uname -s)" in
     CYGWIN*|MINGW32*|MSYS*|MINGW*)
         echo 'MS Windows'
         alias python3=python
+	shopt -s nullglob
         ;;
 esac
 
@@ -31,7 +32,6 @@ if [ -z "${JOBNAME}" ]; then
 fi
 
 # go through log files and run fiohistogram.py on each
-shopt -s nullglob
 files=(${HOME_FOLDER}/*${JOBNAME}_${METRIC}.*.log)
 echo "Find MAX and MAX_IOPS in '${files[@]}'..."
 maxes=$(python3 ../src/max_value_finder.py -f ${files[@]} -m both 2>&1)

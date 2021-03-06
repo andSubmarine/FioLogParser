@@ -13,9 +13,8 @@ do
 	# run experiment
 	name="$(basename -s .fio $f)"	# filename without type
 	echo "Executing $name..."
-	fio $f > $name.txt
-
 	# make graphs
+	/home/pito/xNVMe/third-party/fio/repos/fio $f > $name.txt	# run experiment
 	logfiles=(*_lat.*.log)
 	echo "Find MAX and MAX_IOPS in $logfiles..."
 	echo "Find MAX and MAX_IOPS in '${logfiles[@]}'..."
