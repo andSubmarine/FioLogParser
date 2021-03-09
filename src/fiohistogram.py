@@ -60,6 +60,9 @@ def color_hist(ax, N, bins, patches):
         color = plt.cm.viridis(norm(thisfrac))
         thispatch.set_facecolor(color)
 
+def bin_width(args, smin, smax):
+    return "Bin width: {}".format((smax-smin) / args.bins)
+
 def determine_ylabel(args):
     if args.hist_mode == "pdf":
         return "Probability density"
@@ -75,15 +78,15 @@ def hist(ax, args, sample, smin, smax):
     '''
     b = int(args.bins) if not args.xlog else 10 ** np.linspace(np.log10(smin), np.log10(smax), int(args.bins))
     if args.hist_mode == "cdf":
-        return ax.hist(sample, bins=b, density=True, cumulative=True, log=args.ylog, range=(smin, smax)) 
+        return ax.hist(sample, bins=b, density=True, cumulative=True, log=args.ylog, range=(smin, smax), label=bin_width(args, smin, smax)) 
     elif args.hist_mode == "pdf":
         if args.mode == "simple":
             weights = np.ones_like(sample)/float(len(sample))
-            return ax.hist(sample, bins=b, weights=weights, log=args.ylog, range=(smin, smax)) 
+            return ax.hist(sample, bins=b, weights=weights, log=args.ylog, range=(smin, smax), label=bin_width(args, smin, smax)) 
         else:
-            return ax.hist(sample, bins=b, density=True, log=args.ylog, range=(smin, smax)) 
+            return ax.hist(sample, bins=b, density=True, log=args.ylog, range=(smin, smax), label=bin_width(args, smin, smax)) 
     else: 
-        return ax.hist(sample, bins=b, log=args.ylog, range=(smin, smax)) 
+        return ax.hist(sample, bins=b, log=args.ylog, range=(smin, smax), label=bin_width(args, smin, smax)) 
 
 def histogram(args, sample, smin, smax):
     '''
@@ -100,8 +103,13 @@ def histogram(args, sample, smin, smax):
         ax.set_xlim(right=smax)
     if not args.ylog: 
         ax.set_ylim(bottom=0)
+    else:
+        ax.set_ylim(bottom=1E-7) # limit to 0.0000001 or 0.00001% precision on ylog axis
+    if not args.hist_mode == "val":
+        ax.set_ylim(top=1)
     if (args.percentage):
-        ax.yaxis.set_major_formatter(PercentFormatter(xmax=1,decimals=3))
+        ax.yaxis.set_major_formatter(PercentFormatter(xmax=1,decimals=5))
+    ax.legend()
     
 def normal_distribution(args, sample, smin, smax): 
     '''
@@ -131,7 +139,7 @@ def normal_distribution(args, sample, smin, smax):
         color_hist(ax, N, bins, patches)
     ax.set(xlabel=metric_label(args.logtype), ylabel=determine_ylabel(args),title="Parametric Density Estimation")
     if (args.percentage):
-        ax.yaxis.set_major_formatter(PercentFormatter(xmax=1,decimals=3))
+        ax.yaxis.set_major_formatter(PercentFormatter(xmax=1,decimals=5))
     ax.plot(values, probabilities)
     if args.show_means:
         plt.axvline(x=sample_mean, label="mean", c="b")
@@ -144,6 +152,11 @@ def normal_distribution(args, sample, smin, smax):
         ax.set_xlim(right=smax)
     if not args.ylog: 
         ax.set_ylim(bottom=0)
+    else:
+        ax.set_ylim(bottom=1E-7) # limit to 0.0000001 or 0.00001% precision on ylog axis
+    if not args.hist_mode == "val":
+        ax.set_ylim(top=1)
+    ax.legend()
 
 def determine_bandwidth(args, train):
     '''
@@ -226,7 +239,7 @@ def kernel_density(args, sample, smin, smax):
     if (args.color):
         color_hist(ax, N, bins, patches)
     if (args.percentage):
-        ax.yaxis.set_major_formatter(PercentFormatter(xmax=1,decimals=3))
+        ax.yaxis.set_major_formatter(PercentFormatter(xmax=1,decimals=5))
     ax.plot(values[:], probabilities, label=args.kmode)
     ax.set(xlabel=metric_label(args.logtype), ylabel=determine_ylabel(args),title="Kernel Density Estimation")
     if args.min:
@@ -235,6 +248,10 @@ def kernel_density(args, sample, smin, smax):
         ax.set_xlim(right=smax)
     if not args.ylog: 
         ax.set_ylim(bottom=0)
+    else:
+        ax.set_ylim(bottom=1E-7) # limit to 0.0000001 or 0.00001% precision on ylog axis
+    if not args.hist_mode == "val":
+        ax.set_ylim(top=1)
     ax.legend()
 
 def run(args):
