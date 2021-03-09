@@ -61,7 +61,7 @@ def color_hist(ax, N, bins, patches):
         thispatch.set_facecolor(color)
 
 def bin_width(args, smin, smax):
-    return "Bin width: {}".format((smax-smin) / args.bins)
+    return "Bin width: {}".format((smax-smin) / int(args.bins))
 
 def determine_ylabel(args):
     if args.hist_mode == "pdf":
