@@ -30,7 +30,7 @@ if [ -z "${JOBNAME}" ]; then
     read JOBNAME
 fi
 
-# go through log files and run fiohistogram.py on each
+# go through log files and run FioLogparser and FioHistogram on each
 shopt -s nullglob
 files=(${HOME_FOLDER}/*${JOBNAME}_${METRIC}.*.log)
 echo "Find MAX and MAX_IOPS in '${files[@]}'..."
