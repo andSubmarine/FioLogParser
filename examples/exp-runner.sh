@@ -22,31 +22,31 @@ do
 done
 
 # 3) make graphs: all experiments has been run and log files have been flushed so build graphs like in graph-builder.sh
-#for f in ${files[@]}
-#do 
-#	name="$(basename -s .fio $f)"	# filename without type
-#	logfiles=(*_lat.*.log)
-#	echo "Find MAX and MAX_IOPS in $logfiles..."
-#	echo "Find MAX and MAX_IOPS in '${logfiles[@]}'..."
-#	maxes=$(python3 ../src/max_value_finder.py -f ${logfiles[@]} -m both 2>&1)
-#	max=$(echo $maxes | cut -f1 -d " ")
-#	iops=$(echo $maxes | cut -f2 -d " ")
-#	echo "MAX=$max"
-#	echo "MAX_IOPS=$iops"
-#	for lf in ${logfiles[@]}
-#	do
-#		python3 ../src/fiologparser.py -m io_count -lt lat --title "IOPS distribution over the course of experiment" -o "$name-iocount.png" -f "$lf"  -aa "$iops" 
-#		python3 ../src/fiologparser.py -m ios -lt lat --title "Measurement value per I/O" -o "$name-ios-ylog.png" -f "$lf" -ylog -aa "$max"
-#		python3 ../src/fiohistogram.py -m simple -lt lat -f "$lf" -o "$name-hist.png" --bins 100 --min 0 --max "$max"
-#		python3 ../src/fiohistogram.py -m simple -lt lat -f "$lf" -o "$name-hist-ylog.png" --bins 100 --ylog --min 0 --max "$max"
-#	done
-#done
+for f in ${files[@]}
+do 
+	name="$(basename -s .fio $f)"	# filename without type
+	logfiles=(*_lat.*.log)
+	echo "Find MAX and MAX_IOPS in $logfiles..."
+	echo "Find MAX and MAX_IOPS in '${logfiles[@]}'..."
+	maxes=$(python3 ../src/max_value_finder.py -f ${logfiles[@]} -m both 2>&1)
+	max=$(echo $maxes | cut -f1 -d " ")
+	iops=$(echo $maxes | cut -f2 -d " ")
+	echo "MAX=$max"
+	echo "MAX_IOPS=$iops"
+	for lf in ${logfiles[@]}
+	do
+		python3 ../src/fiologparser.py -m io_count -lt lat --title "IOPS distribution over the course of experiment" -o "$name-iocount.png" -f "$lf"  -aa "$iops" 
+		python3 ../src/fiologparser.py -m ios -lt lat --title "Measurement value per I/O" -o "$name-ios-ylog.png" -f "$lf" -ylog -aa "$max"
+		python3 ../src/fiohistogram.py -m simple -lt lat -f "$lf" -o "$name-hist.png" --bins 100 --min 0 --max "$max"
+		python3 ../src/fiohistogram.py -m simple -lt lat -f "$lf" -o "$name-hist-ylog.png" --bins 100 --ylog --min 0 --max "$max"
+	done
+done
 
 # 4) cleanup: zip all related files and remove them from drive
-#for f in ${files[@]}
-#do 
-#	name="$(basename -s .fio $f)"	# filename without type
-#	zip -m ${HOME_FOLDER}/$name.zip $f $name.txt $name*.log $name*.png
-#	echo "$name has been zipped."
-#done
+for f in ${files[@]}
+do 
+	name="$(basename -s .fio $f)"	# filename without type
+	zip -m ${HOME_FOLDER}/$name.zip $f $name.txt $name*.log $name*.png
+	echo "$name has been zipped."
+done
 echo "Experimentation complete. Please transfer and remove zip files."
