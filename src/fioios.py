@@ -31,10 +31,11 @@ def build_count_graphs(args):
             ax.scatter(x_values, y_values, s=10)
         if args.logscale_y:
             ax.set_yscale('log')
-        if(args.axisalign):
-            ax.set_ylim(bottom=0, top=args.axisalign)
-        else:
+            ax.set_ylim(bottom=1E-1)    # set low to 0.1
+        else: 
             ax.set_ylim(bottom=0)
+        if(args.axisalign):
+            ax.set_ylim(top=args.axisalign)
                 
     ax.legend([simply_filename(f) for f in args.files], loc="upper right")
     ax.set(xlabel="IO Number (counted by log entries)",ylabel=ylabel,title=args.title)
