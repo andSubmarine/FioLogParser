@@ -31,7 +31,7 @@ def build_count_graphs(args):
             ax.scatter(x_values, y_values, s=10)
         if args.logscale_y:
             ax.set_yscale('log')
-            ax.set_ylim(bottom=1E-1)    # set low to 0.1
+            ax.set_ylim(bottom=1)
         else: 
             ax.set_ylim(bottom=0)
         if(args.axisalign):
