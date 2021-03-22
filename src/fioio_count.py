@@ -8,7 +8,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 from line_count import line_count
-from fio_utils import metric_label, combine, simply_filename, every_nth, not_same_every_nth, file_check, time_it, elapsed_time_string
+from fio_utils import metric_label, combine, simply_filename, file_check, time_it
 
 ###################################################
 # IO COUNT MODE
@@ -44,7 +44,7 @@ def build_io_count_graphs(args):
         ax.legend([", ".join([simply_filename(f) for f in args.files]) if len(args.files) < 3 else "aggregated files"], loc="upper right")
     else: 
         ax.legend([simply_filename(f) for f in args.files], loc="upper right")
-    ax.set(xlabel="Elapsed time ({})".format(elapsed_time_string(args)),
+    ax.set(xlabel="Elapsed time (sec)",
            ylabel="IOPS",
            title=args.title)
     ax.grid()

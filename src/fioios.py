@@ -8,7 +8,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 from line_count import line_count
-from fio_utils import metric_label, combine, simply_filename, every_nth, not_same_every_nth, file_check, time_it, elapsed_time_string
+from fio_utils import metric_label, simply_filename, file_check, time_it
 
 ###################################################
 # IOS MODE
@@ -31,11 +31,11 @@ def build_count_graphs(args):
             ax.scatter(x_values, y_values, s=10)
         if args.logscale_y:
             ax.set_yscale('log')
-        else:
-            if(args.axisalign):
-                ax.set_ylim(bottom=0, top=args.axisalign)
-            else:
-                ax.set_ylim(bottom=0)
+            ax.set_ylim(bottom=1)
+        else: 
+            ax.set_ylim(bottom=0)
+        if(args.axisalign):
+            ax.set_ylim(top=args.axisalign)
                 
     ax.legend([simply_filename(f) for f in args.files], loc="upper right")
     ax.set(xlabel="IO Number (counted by log entries)",ylabel=ylabel,title=args.title)
