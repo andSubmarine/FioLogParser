@@ -33,10 +33,14 @@ fi
 # go through log files and run fiologparser.py in io_count mode on each
 shopt -s nullglob
 files=(${HOME_FOLDER}/*${JOBNAME}_${METRIC}.*.log)
+echo "Find MAX in '${files[@]}'..."
+maxes=$(python3 ../src/max_value_finder.py -f ${files[@]} -m max 2>&1)
+max=$(echo $maxes | cut -f1 -d " ")
+echo "MAX=$max"
 for f in ${files[@]}
 do 
     name="$(basename -s .log $f)"
-    # python3 ../src/fiologparser.py -m ios -lt "${METRIC}" --title "Measurement value per I/O" -o "$name-ios.png" -f "$f"
-    python3 ../src/fiologparser.py -m ios -lt "${METRIC}" --title "Measurement value per I/O" -o "$name-ios-ylog.png" -f "$f" -ylog
+    # python3 ../src/fiologparser.py -m ios -lt "${METRIC}" --title "Measurement value per I/O" -o "$name-ios.png" -f "$f" -aa "$max"
+    python3 ../src/fiologparser.py -m ios -lt "${METRIC}" --title "Measurement value per I/O" -o "$name-ios-ylog.png" -f "$f" -ylog -aa "$max"
 done
 echo "done"
