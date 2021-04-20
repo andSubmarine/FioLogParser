@@ -32,6 +32,7 @@ do
         name="$(basename -s .log $lf)"
         python3 ../src/fiologparser.py -m io_count -lt lat --title "IOPS distribution over the course of experiment" -o "$name-iocount.png" -f "$lf"  -aa "$iops"
         python3 ../src/fiologparser.py -m ios -lt lat --title "Measurement value per I/O" -o "$name-ios-ylog.png" -f "$lf" -ylog -aa "$max"
+        python3 ../src/fiologparser.py -m mixed -lt lat --title "Measurement value per I/O" -o "$name-mixed-ylog.png" -f "$lf" -ylog -aa "$max"
         python3 ../src/fiohistogram.py -m simple -lt lat -f "$lf" -o "$name-hist.png" --bins 100 --min 0 --max "$max"
         python3 ../src/fiohistogram.py -m simple -lt lat -f "$lf" -o "$name-hist-ylog.png" --bins 100 --ylog --min 0 --max "$max"
 done
