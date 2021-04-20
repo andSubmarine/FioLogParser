@@ -4,6 +4,7 @@ import argparse
 from fioelapsed import build_elapsed_graphs
 from fioios import build_count_graphs
 from fioio_count import build_io_count_graphs
+from fiomixed import build_mixed_read_write_graphs
 
 ###################################################
 # MAIN METHOD & ARGUMENTS
@@ -16,7 +17,7 @@ def main():
     print("Welcome to FioLogParser!")
     parser = argparse.ArgumentParser()
     parser.add_argument('-m','--mode', help="the mode used for parsing and building graphs", 
-                        choices=["elapsed", "ios","io_count"], required=True)
+                        choices=["elapsed", "ios","io_count", "mixed"], required=True)
     parser.add_argument('-lt','--logtype', help="the type for values in files", 
                         default="bw", choices=["bw","lat","iops"],required=True)
     parser.add_argument('-f','--files', nargs='+', help='absolute/relative filepaths for files to parse', required=True)
@@ -43,6 +44,8 @@ def main():
         build_count_graphs(args)
     elif args.mode == "io_count":
         build_io_count_graphs(args)
+    elif args.mode == "mixed":
+        build_mixed_read_write_graphs(args)
     print("Completed turning log file(s) into graphs ({:.3f} sec).".format((time.time_ns() - start_time) / 1E9))
 
 if __name__ == '__main__':
