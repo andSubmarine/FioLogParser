@@ -42,8 +42,9 @@ def build_graph(args, x_values, y_values, filepath, mode="reads"):
     else:
         ax.set_ylim(bottom=0)
 
-    ax.set_xlim(right=len(x_values))        
-    ax.legend((mode+"-"+simply_filename(filepath)), loc="upper right")
+    ax.set_xlim(left=0, right=len(x_values))        
+    legend=mode+"-"+simply_filename(filepath)
+    ax.legend([legend], loc="upper right")
     ax.set(xlabel="IO Number (counted by log entries)",ylabel=ylabel,title=args.title)
     ax.grid()
     # plt.tight_layout()
