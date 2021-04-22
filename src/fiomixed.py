@@ -37,10 +37,11 @@ def build_graph(args, x_values, y_values, filepath, mode="reads"):
         ax.scatter(x_values, y_values, s=10)
     if args.logscale_y:
         ax.set_yscale('log')
-    if(args.axisalign):
-        ax.set_ylim(bottom=0, top=args.axisalign)
+        ax.set_ylim(bottom=1)
     else:
         ax.set_ylim(bottom=0)
+    if(args.axisalign):
+        ax.set_ylim(top=args.axisalign)
 
     ax.set_xlim(left=0, right=len(x_values))        
     legend=mode+"-"+simply_filename(filepath)
