@@ -41,7 +41,7 @@ done
 for f in ${files[@]}
 do 
 	name="$(basename -s .fio $f)"	# filename without type
-	zip -m ${HOME_FOLDER}/$name.zip $name.txt $name*.log $name*.png
+	zip -m ${HOME_FOLDER}/$name.zip $name.txt $name*.log *$name*.png
 	zip -u ${HOME_FOLDER}/$name.zip $f
 	echo "$name has been zipped."
 done
