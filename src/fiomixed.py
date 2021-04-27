@@ -23,10 +23,13 @@ def build_mixed_read_write_graphs(args):
         build_graph(args, x_values, reads, filepath, mode="reads")
         build_graph(args, x_values, writes, filepath, mode="writes")
 
+def empty_check(array):
+    return len(array) == 0 or all(value == 0 or np.isnan(value) for value in array)
+
 def build_graph(args, x_values, y_values, filepath, mode="reads"):
     # do not build graph if either result set are empty
-    if (len(x_values) === 0 or len(y_values) === 0): 
-        print("warning: {} do not contain any values, skipping graph build", mode)
+    if (empty_check(x_values) or empty_check(y_values)): 
+        print("warning: {} do not contain any values, skipping graph build".format(mode))
         return
     ylabel = metric_label(args.logtype)
     fig, ax = plt.subplots()
