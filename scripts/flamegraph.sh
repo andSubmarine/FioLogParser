@@ -19,8 +19,8 @@ do
         fio $f > $name.txt &       # run experiment
         mypid=$!
         sleep 1
-        /usr/lib/linux-tools-5.4.0-54/perf record -F 99 -g --call-graph dwarf -p $mypid sleep 240
-        /usr/lib/linux-tools-5.4.0-54/perf script > out.perf
+        perf record -F 99 -g --call-graph dwarf -p $mypid sleep 240
+        perf script > out.perf
         
         #NOTE: FlameGraph is expected, by default, to be in the same directory as this flamegraph.sh script.
         #Change location of FlameGraph if the library is installed elsewhere.
