@@ -19,7 +19,7 @@ This repository and the associated set of tools were built by Andreas Blanke ([@
 Run the following to setup the required packages to run FioLogParser and associated scripts. Please be aware that the command should be run with administrive rights (Run as Administrator on Windows or with `sudo` on Linux):
 
 ```
-pip install -r requirements.txt
+pip install -r dependencies.txt
 ```
 
 Want to test that your setup works? Run the script `simple-example.sh` in the `/examples` folder and see if it generates the `output.png` graph.
