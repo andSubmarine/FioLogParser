@@ -1,0 +1,2 @@
+These files provide the workload for doing micro-architectural analysis using perf-runner.sh (scripts directory). 
+Give perf-runner.sh this directory as argument to compare xnvme- and and native io_uring. 

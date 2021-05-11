@@ -1,0 +1,15 @@
+[global]
+bs=4k       # default
+iodepth=1   # default
+size=512G   # device max
+ioengine=external:/usr/lib/libxnvme-fio-engine.so
+group_reporting
+time_based
+direct=1
+thread=1
+filename=/dev/nvme0n1?async=iouring?poll_io=1?poll_sq=0
+
+[xnvme_poll]
+rw=randread
+runtime=360s
+stonewall

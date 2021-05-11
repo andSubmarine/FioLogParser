@@ -1,0 +1,16 @@
+[global]
+bs=4k       # default
+iodepth=1   # default
+size=512G   # device max
+ioengine=io_uring
+group_reporting
+time_based
+direct=1
+thread=1
+
+filename=/dev/nvme0n1
+
+[native_int]
+runtime=360s
+rw=randread
+stonewall
