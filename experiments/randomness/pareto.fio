@@ -1,0 +1,22 @@
+[global]
+# experiment parameters and levels
+bs=4k
+iodepth=1
+numjobs=1
+rw=randwrite
+random_distribution=pareto:0.8
+norandommap
+
+# config
+size=512g	# size of disk
+filename=/dev/nvme0n1	# mount
+ioengine=external:/usr/lib/libxnvme-fio-engine.so
+group_reporting
+direct=1
+thread=1
+disable_clat=1
+disable_slat=1
+
+[pareto]
+write_lat_log
+stonewall

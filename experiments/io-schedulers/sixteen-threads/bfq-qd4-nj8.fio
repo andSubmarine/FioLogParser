@@ -1,0 +1,24 @@
+[global]
+bs=4k       # default
+size=512G   # device max
+iodepth=4
+numjobs=8
+runtime=10m
+ioscheduler=bfq
+
+# other
+filename=/dev/nvme0n1
+ioengine=external:/usr/lib/libxnvme-fio-engine.so
+group_reporting
+time_based
+direct=1
+thread=1
+norandommap
+
+[bfq-qd4-nj8-reads]
+write_lat_log
+rw=randread
+
+[bfq-qd4-nj8-writes]
+write_lat_log
+rw=randwrite

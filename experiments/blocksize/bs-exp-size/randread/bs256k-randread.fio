@@ -1,0 +1,30 @@
+[global]
+# experiment parameters and levels
+bs=256k
+iodepth=1
+numjobs=1
+rw=randread
+
+# config
+size=512g	# size of disk
+filename=/dev/nvme0n1	# mount
+ioengine=external:/usr/lib/libxnvme-fio-engine.so
+group_reporting
+disable_slat=1
+disable_clat=1
+direct=1
+thread=1
+
+[warmup]
+# workload dependent pre-conditioning
+time_based
+runtime=2h	# maximum runtime
+ss=iops_slope:10%	# run until slope incline stabilize
+ss_dur=15m	# rolling window for steady state criteria
+ss_ramp=10s	# unrecorded preliminary warmup
+# write_lat_log	# record lat log to measure warmup after completion
+stonewall
+
+[bs256k-randread]
+write_lat_log
+stonewall

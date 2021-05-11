@@ -1,0 +1,34 @@
+[global]
+# experiment parameters and levels
+bs=4k
+size=512g
+iodepth=1
+numjobs=1
+runtime=10m
+
+# config
+filename=/dev/nvme0n1   # mount
+ioengine=external:/usr/lib/libxnvme-fio-engine.so
+group_reporting
+time_based
+disable_slat=1
+disable_clat=1
+direct=1
+thread=1
+norandommap
+
+[mix-rand-r0-w100-1]
+rw=randwrite
+write_lat_log
+
+[mix-rand-r0-w100-2]
+rw=randwrite
+write_lat_log
+
+[mix-rand-r0-w100-3]
+rw=randwrite
+write_lat_log
+
+[mix-rand-r0-w100-4]
+rw=randwrite
+write_lat_log
