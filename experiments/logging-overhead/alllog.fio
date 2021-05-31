@@ -1,0 +1,19 @@
+[global]
+# parameters and levels
+bs=4k
+iodepth=1
+numjobs=1
+# config
+direct=1
+thread=1
+filename=/dev/nvme0n1?async=nil
+ioengine=external:/usr/lib/libxnvme-fio-engine.so
+
+[test]
+rw=randwrite
+time_based
+runtime=310s
+size=250G
+write_iops_log=alllogiops
+write_lat_log=allloglat
+write_bw_log=alllogbw
